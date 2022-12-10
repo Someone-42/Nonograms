@@ -21,7 +21,7 @@ def _Ba(x, s, i):
 def _B(x, s, L):
     I = set()
     c = 0
-    for y in x:
+    for y in L:
         c += y
         I.add(c)
     cnf = [[-x[0]], [-x[n + 1]], [s[sum(L), n]]]
@@ -33,7 +33,13 @@ def _B(x, s, L):
     return cnf
 
 def _C10(s):
-    return [[s[0, 1], s[1, 1]], [-s[0, 1], -s[1, 1]]]
+    cnf = []
+    for i in range(n + 1):
+        cnf += [[-s[i, 1], s[0, 1], s[1, 1]], [-s[i, 1], -s[0, 1], -s[1, 1]]]
+    return cnf
+
+def _C10_bis(s):
+    return [[-s[i, 1]] for i in range(2, n + 1)]
 
 def _C11(s):
     cnf = []
@@ -60,28 +66,33 @@ def _C14(x, s):
     return cnf
 
 def _C(x, s):
-    return _C10(s) + _C12(x, s) + _C13(x, s) + _C14(x, s) + [[s[0, 0]]]
+    return _C11(s) + _C12(x, s) + _C13(x, s) + _C14(x, s) + [[s[0, 0]]]
 
 def _np_cnf_to_int(cnf):
     return [[int(p) for p in d] for d in cnf]
 
 def _show_sol(sol):
+    if type(sol) == str:
+        print(sol)
+        return
     l = ['0' if i < 0 else '1' for i in sol]
-    print("sol :", " ".join(l[:11]))
+    print("sol :", " ".join(l[:10]))
     l = np.array(l[10:]).reshape((n + 1, n + 1))
     for sub_l in l:
         print(" ".join(sub_l))
 
-L = (3, 2)
-x = np.arange(1, n + 3)
-s = np.arange(n + 3, n + 3 + (n + 1) ** 2).reshape((n + 1, n + 1))
-#s *= -1
-#np.fill_diagonal(s, 1)
+if __name__ == "__main__":
+    L = (3, 2)
+    x = np.arange(1, n + 3)
+    s = np.arange(n + 3, n + 3 + (n + 1) ** 2).reshape((n + 1, n + 1))
+    print(x)
+    print(s)
+    #s *= -1
+    #np.fill_diagonal(s, 1)
 
-cnf = _B(x, s, L) + _C(x, s)
-cnf = _np_cnf_to_int(cnf)
+    cnf = _C(x, s) + _B(x, s, L)
+    cnf = _np_cnf_to_int(cnf)
 
-suu = set()
-sol = sat.solve(cnf)
-_show_sol(sol)
-#print(" ".join('0' if i < 0 else '1' for i in sol))
+    sol = sat.solve(cnf)
+    _show_sol(sol)
+    #print(" ".join('0' if i < 0 else '1' for i in sol))
