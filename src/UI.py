@@ -54,19 +54,30 @@ class UI(tk.Tk):
         self.mainloop()
 
     def solve(self):
+        self.my_upd()
         pass
 
     def reset(self):
+        self.my_upd()
         pass
 
     def select(self):
+        self.my_upd()
         pass
 
     def hint(self):
+        self.my_upd()
         pass
 
     def undo(self):
+        self.my_upd()
         pass
+
+    def my_upd(self, b: Board):
+        wgds = tk.Tk.winfo_children(self) # all widgets
+        for w in wgds[0]:
+            print(w)
+
 
 if __name__ == "__main__":
     b = Board.from_file("src/TestBoard.txt")
