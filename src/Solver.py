@@ -77,11 +77,14 @@ def _C(x, s):
 def _np_cnf_to_int(cnf):
     return [[int(p) for p in d] for d in cnf]
 
-def _show_sol(sol):
+def _show_sol(sol, simplified = False):
     if type(sol) == str:
         print(sol)
         return
     l = ['0' if i < 0 else '1' for i in sol]
+    if simplified:
+        print("sol :", " ".join(l[1:9]))
+        return
     print("sol :", " ".join(l[:10]))
     l = np.array(l[10:]).reshape((n + 1, n + 1))
     for sub_l in l:
