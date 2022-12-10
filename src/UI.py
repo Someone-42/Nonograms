@@ -2,7 +2,7 @@ import tkinter as tk
 from Board import Board
 
 class UI(tk.Tk):
-    def __init__(self, title="Nonogram", size=(700, 700)):
+    def __init__(self, title="Nonogram", size=(900, 700)):
         super().__init__()
         self.title(title)
         self.size = size
@@ -25,8 +25,8 @@ class UI(tk.Tk):
                 self.buttons[i][j].grid(row=i, column=j)
     
     def show_menu(self):
-        offset = 50
-        nb = 4 # number of buttons
+        offset = 150
+        nb = 5 # number of buttons
         # add a button to solve the board
         self.solve_button = tk.Button(self, text="Solve", font="Arial 20 bold", width=10, height=2, bg="white", fg="black", command=self.solve)
         self.solve_button.place(x=0, y=self.size[1]//nb*3+offset)
@@ -43,7 +43,10 @@ class UI(tk.Tk):
         self.hint_button = tk.Button(self, text="Hint", font="Arial 20 bold", width=10, height=2, bg="white", fg="black", command=self.hint)
         self.hint_button.place(x=self.size[0]//nb*3, y=self.size[1]//nb*3+offset)
 
-        
+        # add a button to undo
+        self.undo_button = tk.Button(self, text="Undo", font="Arial 20 bold", width=10, height=2, bg="white", fg="black", command=self.undo)
+        self.undo_button.place(x=self.size[0]//nb*4, y=self.size[1]//nb*3+offset)
+
     def click(self, i, j):
         self.buttons[i][j].config(bg="black" if self.buttons[i][j]["bg"] == "white" else "white")
 
@@ -60,6 +63,9 @@ class UI(tk.Tk):
         pass
 
     def hint(self):
+        pass
+
+    def undo(self):
         pass
 
 if __name__ == "__main__":
