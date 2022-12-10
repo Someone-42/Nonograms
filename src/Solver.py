@@ -82,10 +82,10 @@ def _show_sol(sol):
         print(sol)
         return
     l = ['0' if i < 0 else '1' for i in sol]
-    print("sol :", " ".join(l[1:9]))
-    #l = np.array(l[10:]).reshape((n + 1, n + 1))
-    #for sub_l in l:
-    #    print(" ".join(sub_l))
+    print("sol :", " ".join(l[:10]))
+    l = np.array(l[10:]).reshape((n + 1, n + 1))
+    for sub_l in l:
+        print(" ".join(sub_l))
 
 if __name__ == "__main__":
     L = (3, 2)
