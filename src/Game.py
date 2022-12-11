@@ -35,7 +35,6 @@ class Game:
         self.user_actions_stack = UnsafeStack()
 
     def run(self):
-        self.ui.game = self
         self.ui.run()
 
     def is_finished(self):
