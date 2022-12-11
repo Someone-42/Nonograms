@@ -10,49 +10,49 @@ from Utils import copy_2d_list
 
 def solve(board : Board):
     """ Returns a new solved board """
-    cnf, indices = _get_cnf(board)
-    sol = list(sat.solve(cnf)) # We suppose there is only one solution
+    cnf = _get_cnf(board)
+    sol = sat.solve(cnf) # We suppose there is only one solution
     assert sol != "UNSAT", "This nonogram has no solution"
-    solved = Board(board.size, copy_2d_list(board.constraints))
+
+    sol = list(sol)
+    n, m = board.size
     grid = []
-    for i in indices:
-        grid += sol[i[0]:i[1]]
-    solved.grid = np.array(grid)[:].reshape(board.size[0], board.size[1]) > 0
+    for i in range(m):
+        grid.append(sol[(n + 2) * (i + 1) + 1:(n + 2) * (i + 2) - 1])
+
+    solved = Board(board.size, copy_2d_list(board.constraints))
+    solved.grid = np.flip(np.rot90( # Rotating and flipping bc im lazy to make it cleaner, at least this way it shows properly
+        np.array(grid)[:].reshape(board.size[0], board.size[1]) > 0, 
+        -1), 1)
+
     return solved
 
 def _get_cnf(board : Board):
+    # Could've been made cleaner, way cleaner...
     n, m = board.size
     cnf = []
-    counter = 1
-    cstr_counter = 0
-    indices = []
-    for _ in range(n):
-        xsize = m + 2
-        ssize = (m + 1) ** 2
-        x = np.arange(counter, counter + xsize)
-        s = np.arange(counter + xsize, counter + xsize + ssize).reshape((m + 1, m + 1))
-        constraints = board.constraints[cstr_counter]
 
-        indices.append((counter, counter + m))
+    x_grid = np.arange(1, (m + 2) * (n + 2) + 1).reshape((m + 2, n + 2))
+    counter = (m + 2) * (n + 2) + 1
 
-        cstr_counter += 1
-        counter += xsize + ssize
-
-        cnf += _np_cnf_to_int(_C(x, s, m) + _B(x, s, constraints, m))
-        
     for i in range(m):
-        xsize = n + 2
-        ssize = (n + 1) ** 2
-        x = np.arange(counter, counter + xsize)
-        s = np.arange(counter + xsize, counter + xsize + ssize).reshape((n + 1, n + 1))
-        constraints = board.constraints[cstr_counter]
-        
-        counter += xsize + ssize
-        cstr_counter += 1
+        x = x_grid[i + 1]
+        s = np.arange(counter, counter + (n + 1)**2).reshape((n + 1, n + 1))
+        row_constraint = board.constraints[i]
 
-        cnf += _np_cnf_to_int(_C(x, s, n) + _B(x, s, constraints, n))
+        counter += (n + 1)**2
 
-    return cnf, indices
+        cnf += _np_cnf_to_int(_B(x, s, row_constraint, n) + _C(x, s, n))
+
+    for j in range(n):
+        x = x_grid[:, j + 1]
+        s = np.arange(counter, counter + (m + 1)**2).reshape((m + 1, m + 1))
+        counter += (m + 1)**2
+        column_constraint = board.constraints[j + m]
+
+        cnf += _np_cnf_to_int(_B(x, s, column_constraint, m) + _C(x, s, m))
+
+    return cnf
 
 
 
