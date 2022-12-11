@@ -3,7 +3,13 @@ from Board import Board
 from tkinter import filedialog
 
 class UI(tk.Tk):
-    def __init__(self, title="Nonogram", size=(900, 900), b: Board = None) -> None:
+    """This class represents the UI for the nonogram solver."""
+    def __init__(self, title: str = "Nonogram", size: tuple =(900, 900), b: Board = None) -> None:
+        """Initializes the UI.
+        title: The title of the window
+        size: The size of the window
+        b: The board to display initially
+        """
         super().__init__()
         self.title(title)
         self.size = size
@@ -24,8 +30,6 @@ class UI(tk.Tk):
         button_height = 1
         self.buttons = []
 
-        # We find the maximum number of constraints for a row or a column
-        max_constraints = max([len(c) for c in b.constraints])
         for i in range(b.size[0]):
             tk.Label(self.grid, text="\n".join([str(c) for c in b.constraints[i]]), font="Arial 20 bold", bg="white", fg="black").grid(row=0, column=i+1)
         for i in range(b.size[1]):
