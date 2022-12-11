@@ -40,6 +40,12 @@ class UnsafeStack:
     def can_unpop(self) -> bool:
         return self.max_unpop > 0
 
+    def get_size(self):
+        return self.pointer + 1
+    
+    def get_max_unpop(self):
+        return self.max_unpop
+
     def __str__(self) -> str:
         return str(self.stack[:self.pointer])
 

@@ -2,6 +2,7 @@ from UnsafeStack import UnsafeStack
 from Level import Level
 from Board import Board
 from Case import Case
+from Action import Action
 import Solver
 import random
 
@@ -40,19 +41,45 @@ class Game:
     def is_finished(self):
         return self.solved_board == self.user_board
 
+    def _get_hint_type(self, x, y):
+        user_xy, solved_xy = self.user_board.grid[y, x], self.solved_board.grid[y, x]
+        if user_xy == 0:
+            if solved_xy == 0:
+                return -1       # Hint type -1 : Error/Discard
+            if solved_xy > 0:
+                return 1        # Hint type 1 : Solution case (auto colored)
+        else:
+            if solved_xy != user_xy:
+                return 2        # Hint type 2 : Wrong color placement by the user
+            else:
+                return 3        # Hint type 3 : Right placement by the user
+
     def new_hint(self, hint_type: int):
         x, y = -1, -1
-        while (x != -1) and ((x, y) not in self.hint_keys):
+        hint_tp = -1
+        while (x == -1) and ((x, y) in self.hint_keys) and (hint_tp != hint_type):
             x, y = random.randint(0, self.level.size[0] - 1), random.randint(0, self.level.size[1] - 1)
+            hint_tp = self._get_hint_type(x, y)
         self.hint_keys.add((x, y))
         self.hints.append(Case(x, y, hint_type))
 
     def undo(self):
-        pass
+        action = self.user_actions_stack.pop()
+        self.user_board.grid[action.y, action.x] = action.previous_color
 
     def redo(self):
-        pass
+        action = self.user_actions_stack.unpop()
+        self.user_board.grid[action.y, action.x] = action.new_color
 
+    def color(self, x, y, color):
+        action = Action(x, y, color, self.user_board.grid[y, x])
+        if action.new_color == action.previous_color:
+            return
+        self.user_board.grid[y, x] = color
+        self.user_actions_stack.push(action)
+
+    
     def reset(self):
         self.user_board = Board(self.level.size)
         self.user_actions_stack = UnsafeStack()
+        
