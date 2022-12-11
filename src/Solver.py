@@ -2,34 +2,37 @@ import numpy as np
 import itertools as it
 import pycosat as sat
 from Board import Board
+from Level import Level
 from Utils import copy_2d_list
 
 # TODO: Redefine the old things
 # T : The big table HMMM
 # x : a propositional variables array from 0 to n + 1
 
-def solve(board : Board):
+def solve(level: Level):
     """ Returns a new solved board """
-    cnf = _get_cnf(board)
+    cnf = _get_cnf(level)
     sol = sat.solve(cnf) # We suppose there is only one solution
     assert sol != "UNSAT", "This nonogram has no solution"
 
     sol = list(sol)
-    n, m = board.size
+    n, m = level.size
     grid = []
     for i in range(m):
         grid.append(sol[(n + 2) * (i + 1) + 1:(n + 2) * (i + 2) - 1])
 
-    solved = Board(board.size, copy_2d_list(board.constraints))
-    solved.grid = np.flip(np.rot90( # Rotating and flipping bc im lazy to make it cleaner, at least this way it shows properly
-        np.array(grid)[:].reshape(board.size[0], board.size[1]) > 0, 
+    grid = np.flip(np.rot90( # Rotating and flipping bc im lazy to make it cleaner, at least this way it shows properly
+        np.array(grid)[:].reshape(level.size[0], level.size[1]), 
         -1), 1)
+
+    solved = Board(level.size, False)
+    solved.grid = np.where(grid > 0, 1, 0)
 
     return solved
 
-def _get_cnf(board : Board):
+def _get_cnf(level : Level):
     # Could've been made cleaner, way cleaner...
-    n, m = board.size
+    n, m = level.size
     cnf = []
 
     x_grid = np.arange(1, (m + 2) * (n + 2) + 1).reshape((m + 2, n + 2))
@@ -38,7 +41,7 @@ def _get_cnf(board : Board):
     for i in range(m):
         x = x_grid[i + 1]
         s = np.arange(counter, counter + (n + 1)**2).reshape((n + 1, n + 1))
-        row_constraint = board.constraints[i]
+        row_constraint = level.constraints[i]
 
         counter += (n + 1)**2
 
@@ -48,7 +51,7 @@ def _get_cnf(board : Board):
         x = x_grid[:, j + 1]
         s = np.arange(counter, counter + (m + 1)**2).reshape((m + 1, m + 1))
         counter += (m + 1)**2
-        column_constraint = board.constraints[j + m]
+        column_constraint = level.constraints[j + m]
 
         cnf += _np_cnf_to_int(_B(x, s, column_constraint, m) + _C(x, s, m))
 
