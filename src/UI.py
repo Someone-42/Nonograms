@@ -2,10 +2,11 @@ import tkinter as tk
 from Board import Board
 from tkinter import filedialog
 from Solver import solve # just for testing
+from Level import Level
 
 class UI(tk.Tk):
     """This class represents the UI for the nonogram solver."""
-    def __init__(self, title: str = "Nonogram", size: tuple =(900, 900), b: Board = None) -> None:
+    def __init__(self, title: str = "Nonogram", size: tuple =(900, 900)) -> None:
         """Initializes the UI.
         title: The title of the window
         size: The size of the window
@@ -17,6 +18,7 @@ class UI(tk.Tk):
         self.geometry(str(size[0]) + "x" + str(size[1]))
         self.resizable(0, 0)
         self.config(bg="white")
+        self.game = None
 
         self.size_b = b.size
 
@@ -105,7 +107,7 @@ class UI(tk.Tk):
                 filetypes = (("Text files", "*.txt"), ("all files", "*.*"))
             )
 
-            new_b = Board.from_file(filename)
+            new_b = Level.from_file(filename)
             self.size_b = new_b.size
 
             wgds = tk.Tk.winfo_children(self) # all widgets
