@@ -1,8 +1,9 @@
 import tkinter as tk
 from Board import Board
+from tkinter import filedialog
 
 class UI(tk.Tk):
-    def __init__(self, title="Nonogram", size=(900, 700)):
+    def __init__(self, title="Nonogram", size=(900, 900), b: Board = None) -> None:
         super().__init__()
         self.title(title)
         self.size = size
@@ -10,22 +11,34 @@ class UI(tk.Tk):
         self.resizable(0, 0)
         self.config(bg="white")
 
+        self.size_b = b.size
+
         self.show_board(b)
         self.show_menu()
 
-    def show_board(self, b: Board):
+
+    def show_board(self, b: Board) -> None:
         self.grid = tk.Frame(self, bg="white")
         self.grid.pack()
-
+        button_width = 3
+        button_height = 1
         self.buttons = []
+
+        # We find the maximum number of constraints for a row or a column
+        max_constraints = max([len(c) for c in b.constraints])
+        for i in range(b.size[0]):
+            tk.Label(self.grid, text="\n".join([str(c) for c in b.constraints[i]]), font="Arial 20 bold", bg="white", fg="black").grid(row=0, column=i+1)
+        for i in range(b.size[1]):
+            tk.Label(self.grid, text=" ".join([str(c) for c in b.constraints[i+b.size[0]]]), font="Arial 20 bold", bg="white", fg="black").grid(row=i+1, column=0)
+
         for i in range(b.size[0]):
             self.buttons.append([])
             for j in range(b.size[1]):
-                self.buttons[i].append(tk.Button(self.grid, text=" ", font="Arial 20 bold", width=2, height=1, bg="white" if not b.grid[i,j] else "black", fg="black", command=lambda i=i, j=j: self.click(i, j)))
-                self.buttons[i][j].grid(row=i, column=j)
+                self.buttons[i].append(tk.Button(self.grid, text=" ", font="Arial 20 bold", width=button_width, height=button_height, bg="white" if not b.grid[i,j] else "black", fg="black", command=lambda i=i, j=j: self.click(i, j)))
+                self.buttons[i][j].grid(row=i+1, column=j+1)
     
-    def show_menu(self):
-        offset = 150
+    def show_menu(self) -> None:
+        offset = 250
         nb = 5 # number of buttons
         # add a button to solve the board
         self.solve_button = tk.Button(self, text="Solve", font="Arial 20 bold", width=10, height=2, bg="white", fg="black", command=self.solve)
@@ -47,42 +60,69 @@ class UI(tk.Tk):
         self.undo_button = tk.Button(self, text="Undo", font="Arial 20 bold", width=10, height=2, bg="white", fg="black", command=self.undo)
         self.undo_button.place(x=self.size[0]//nb*4, y=self.size[1]//nb*3+offset)
 
-    def click(self, i, j):
+    def click(self, i, j) -> tuple[int, int]:
         self.buttons[i][j].config(bg="black" if self.buttons[i][j]["bg"] == "white" else "white")
+        return i,j
 
-    def run(self):
+    def run(self) -> None:
+        self.bind('<Escape>', lambda e: self.destroy()) # close the window when pressing escape
         self.mainloop()
 
-    def solve(self):
-        self.my_upd()
+
+    def solve(self, sol: Board) -> None:
         pass
 
-    def reset(self):
-        self.my_upd()
+    def reset(self) -> None:
+        for i in range(self.size_b[0]):
+            for j in range(self.size_b[1]):
+                self.buttons[i][j].config(bg="white", fg="black")
+        #TODO: reset stack and stuffs in the game class when called from the game class and vice versa
+
+    def select(self) -> Board:
+        try:
+            filename = filedialog.askopenfilename(
+                initialdir = "src/",
+                title = "Select file",
+                filetypes = (("Text files", "*.txt"), ("all files", "*.*"))
+            )
+
+            new_b = Board.from_file(filename)
+            self.size_b = new_b.size
+
+            wgds = tk.Tk.winfo_children(self) # all widgets
+            #find frame within the widgets
+            index_frame = 0
+            for i in range(len(wgds)):
+                if wgds[i].winfo_class() == "Frame":
+                    index_frame = i
+                    break
+            wgds[index_frame].destroy()
+            self.show_board(new_b)
+
+            self.reset()
+
+            return new_b
+        except:
+            return None # The user didn't select a file
+
+    def hint(self) -> None:
         pass
 
-    def select(self):
-        self.my_upd()
+    def undo(self) -> None:
         pass
 
-    def hint(self):
-        self.my_upd()
-        pass
-
-    def undo(self):
-        self.my_upd()
-        pass
-
-    def my_upd(self, b: Board):
-        wgds = tk.Tk.winfo_children(self) # all widgets
-        for w in wgds[0]:
-            print(w)
-
+    def my_upd(self, b: Board) -> None:
+        # Update the board
+        for i in range(b.size[0]):
+            for j in range(b.size[1]):
+                self.buttons[i][j].config(bg="black" if b.grid[i,j] else "white")
 
 if __name__ == "__main__":
     b = Board.from_file("src/TestBoard.txt")
-    b.grid[0,0] = True
-    b.grid[5,1] = True
-    b.grid[0,2] = True
-    ui = UI()
+    b.grid[0,0] = 1
+    b.grid[0,1] = 1
+    b.grid[0,2] = 1
+    b.grid[0,3] = 1
+    ui = UI(b=b)
+    ui.my_upd(b)
     ui.run()
