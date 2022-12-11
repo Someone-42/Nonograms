@@ -1,5 +1,3 @@
-
-
 class UnsafeStack:
     def __init__(self, n):
         self.stack = [None for _ in range(n)]
