@@ -87,7 +87,7 @@ class UI(tk.Tk):
         for i in range(self.size_b[0]):
             for j in range(self.size_b[1]):
                 self.buttons[i][j].config(bg="white", fg="black")
-        #TODO: reset stack and stuffs in the game class when called from the game class and vice versa
+        #TODO: reset stacks and stuffs in the game class when called from the game class and vice versa
 
     def select(self) -> Board:
         """Select a board from a file and loads it into the UI AND returns the new board"""
@@ -122,7 +122,11 @@ class UI(tk.Tk):
         pass
 
     def undo(self) -> None:
-        """Undo the last move"""
+        """Undo the last move in the stack"""
+        pass
+
+    def redo(self) -> None:
+        """Redo the last move in the stack"""
         pass
 
     def my_upd(self, b: Board) -> None:
