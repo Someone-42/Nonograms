@@ -3,7 +3,9 @@
 
 import Solver
 from Board import Board
+from Level import Level
+from Utils import *
 
-b = Board.from_file("src/TestBoard.txt")
+b = Level.from_file("src/TestBoard.txt")
 b = Solver.solve(b)
-b.display_console()
+display_console_board(b)
