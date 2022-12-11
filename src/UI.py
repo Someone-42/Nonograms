@@ -1,6 +1,7 @@
 import tkinter as tk
 from Board import Board
 from tkinter import filedialog
+from Solver import solve # just for testing
 
 class UI(tk.Tk):
     """This class represents the UI for the nonogram solver."""
@@ -128,5 +129,5 @@ if __name__ == "__main__":
     b.grid[0,2] = 1
     b.grid[0,3] = 1
     ui = UI(b=b)
-    ui.my_upd(b)
+    ui.my_upd(solve(b))
     ui.run()
