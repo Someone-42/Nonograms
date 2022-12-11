@@ -3,6 +3,9 @@ from Board import Board
 from tkinter import filedialog
 from Solver import solve # just for testing
 from Level import Level
+from UnsafeStack import UnsafeStack
+from Game import Game
+from Case import Case
 
 class UI(tk.Tk):
     """This class represents the UI for the nonogram solver."""
@@ -19,14 +22,12 @@ class UI(tk.Tk):
         self.resizable(0, 0)
         self.config(bg="white")
         self.game = None
+        self.size_b = None
 
-        self.size_b = b.size
-
-        self.show_board(b)
         self.show_menu()
 
 
-    def show_board(self, b: Board) -> None:
+    def show_board(self, b: Board, l: Level) -> None:
         """Display a given board"""
         self.grid = tk.Frame(self, bg="white")
         self.grid.pack()
@@ -35,9 +36,9 @@ class UI(tk.Tk):
         self.buttons = []
 
         for i in range(b.size[0]):
-            tk.Label(self.grid, text="\n".join([str(c) for c in b.constraints[i]]), font="Arial 20 bold", bg="white", fg="black").grid(row=0, column=i+1)
+            tk.Label(self.grid, text="\n".join([str(c) for c in l.constraints[i]]), font="Arial 20 bold", bg="white", fg="black").grid(row=0, column=i+1)
         for i in range(b.size[1]):
-            tk.Label(self.grid, text=" ".join([str(c) for c in b.constraints[i+b.size[0]]]), font="Arial 20 bold", bg="white", fg="black").grid(row=i+1, column=0)
+            tk.Label(self.grid, text=" ".join([str(c) for c in l.constraints[i+b.size[0]]]), font="Arial 20 bold", bg="white", fg="black").grid(row=i+1, column=0)
 
         for i in range(b.size[0]):
             self.buttons.append([])
@@ -86,17 +87,17 @@ class UI(tk.Tk):
         self.bind('<Escape>', lambda e: self.destroy()) # close the window when pressing escape
         self.mainloop()
 
-
     def solve(self) -> None:
         """Solve the board and show the solution"""
-        pass
+        self.my_upd(self.game.solved_board)
+        self.show_win()
 
     def reset(self) -> None:
         """Reset the board to 0"""
         for i in range(self.size_b[0]):
             for j in range(self.size_b[1]):
                 self.buttons[i][j].config(bg="white", fg="black")
-        #TODO: reset stacks and stuffs in the game class when called from the game class and vice versa
+        self.game.reset()
 
     def select(self) -> Board:
         """Select a board from a file and loads it into the UI AND returns the new board"""
@@ -104,27 +105,25 @@ class UI(tk.Tk):
             filename = filedialog.askopenfilename(
                 initialdir = "src/",
                 title = "Select file",
-                filetypes = (("Text files", "*.txt"), ("all files", "*.*"))
+                filetypes = (("Text files", "*.lvl"), ("all files", "*.*"))
             )
-
-            new_b = Level.from_file(filename)
-            self.size_b = new_b.size
+            new_l = Level.from_file(filename)
+            self.game.load_level(new_l)
+            self.size_b = new_l.size
 
             wgds = tk.Tk.winfo_children(self) # all widgets
             #find frame within the widgets
-            index_frame = 0
-            for i in range(len(wgds)):
-                if wgds[i].winfo_class() == "Frame":
+            for i, wgd in enumerate(wgds):
+                if wgd.winfo_class() == "Frame":
                     index_frame = i
+                    wgds[index_frame].destroy()
                     break
-            wgds[index_frame].destroy()
-            self.show_board(new_b)
+            self.show_board(self.game.user_board, self.game.level)
 
             self.reset()
+        except(FileNotFoundError, AttributeError):
+            return None # if the user cancels the file selection
 
-            return new_b
-        except:
-            return None # The user didn't select a file
 
     def hint(self) -> None:
         """Give an hint and asks for the level of hint"""
@@ -144,12 +143,13 @@ class UI(tk.Tk):
             for j in range(b.size[1]):
                 self.buttons[i][j].config(bg="black" if b.grid[i,j] else "white")
 
+    def show_win(self) -> None:
+        """Colors the buttons green when the user wins"""
+        for i in range(self.size_b[0]):
+            for j in range(self.size_b[1]):
+                self.buttons[i][j].config(bg="green" if self.buttons[i][j]["bg"] == "black" else "white", fg="white")
+
 if __name__ == "__main__":
-    b = Board.from_file("src/TestBoard.txt")
-    b.grid[0,0] = 1
-    b.grid[0,1] = 1
-    b.grid[0,2] = 1
-    b.grid[0,3] = 1
-    ui = UI(b=b)
-    ui.my_upd(solve(b))
-    ui.run()
+    Game = Game(UI())
+    Game.run()
+    
