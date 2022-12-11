@@ -25,6 +25,7 @@ class UI(tk.Tk):
 
 
     def show_board(self, b: Board) -> None:
+        """Display a given board"""
         self.grid = tk.Frame(self, bg="white")
         self.grid.pack()
         button_width = 3
@@ -43,6 +44,7 @@ class UI(tk.Tk):
                 self.buttons[i][j].grid(row=i+1, column=j+1)
     
     def show_menu(self) -> None:
+        """Display the menu buttons"""
         offset = 250
         nb = 5 # number of buttons
         # add a button to solve the board
@@ -66,24 +68,29 @@ class UI(tk.Tk):
         self.undo_button.place(x=self.size[0]//nb*4, y=self.size[1]//nb*3+offset)
 
     def click(self, i, j) -> tuple[int, int]:
+        """Change the color of a button when clicked for the nonogram"""
         self.buttons[i][j].config(bg="black" if self.buttons[i][j]["bg"] == "white" else "white")
         return i,j
 
     def run(self) -> None:
+        """Run the UI mainloop"""
         self.bind('<Escape>', lambda e: self.destroy()) # close the window when pressing escape
         self.mainloop()
 
 
     def solve(self, sol: Board) -> None:
+        """Solve the board and show the solution"""
         pass
 
     def reset(self) -> None:
+        """Reset the board to 0"""
         for i in range(self.size_b[0]):
             for j in range(self.size_b[1]):
                 self.buttons[i][j].config(bg="white", fg="black")
         #TODO: reset stack and stuffs in the game class when called from the game class and vice versa
 
     def select(self) -> Board:
+        """Select a board from a file and loads it into the UI AND returns the new board"""
         try:
             filename = filedialog.askopenfilename(
                 initialdir = "src/",
@@ -111,13 +118,15 @@ class UI(tk.Tk):
             return None # The user didn't select a file
 
     def hint(self) -> None:
+        """Give an hint and asks for the level of hint"""
         pass
 
     def undo(self) -> None:
+        """Undo the last move"""
         pass
 
     def my_upd(self, b: Board) -> None:
-        # Update the board
+        """Update the board"""
         for i in range(b.size[0]):
             for j in range(b.size[1]):
                 self.buttons[i][j].config(bg="black" if b.grid[i,j] else "white")
