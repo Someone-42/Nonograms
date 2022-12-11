@@ -37,6 +37,9 @@ class UnsafeStack:
         self.max_unpop -= 1
         return self.stack[self.pointer]
 
+    def can_unpop(self) -> bool:
+        return self.max_unpop > 0
+
     def __str__(self) -> str:
         return str(self.stack[:self.pointer])
 
