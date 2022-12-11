@@ -45,3 +45,9 @@ class Game:
             x, y = random.randint(0, self.level.size[0] - 1), random.randint(0, self.level.size[1] - 1)
         self.hint_keys.add((x, y))
         self.hints.append(Case(x, y, hint_type))
+
+    def undo(self):
+        pass
+
+    def redo(self):
+        pass
