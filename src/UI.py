@@ -45,27 +45,34 @@ class UI(tk.Tk):
     
     def show_menu(self) -> None:
         """Display the menu buttons"""
-        offset = 250
-        nb = 5 # number of buttons
+        offset = 350
+        nb = 6 # number of buttons
+
+        button_width = 5
+        button_height = 2
         # add a button to solve the board
-        self.solve_button = tk.Button(self, text="Solve", font="Arial 20 bold", width=10, height=2, bg="white", fg="black", command=self.solve)
-        self.solve_button.place(x=0, y=self.size[1]//nb*3+offset)
+        self.solve_button = tk.Button(self, text="Solve", font="Arial 20 bold", width=button_width, height=button_height, bg="white", fg="black", command=self.solve)
+        self.solve_button.place(x=offset//(nb+5), y=self.size[1]//nb*3+offset)
 
         # add a button to reset the board
-        self.reset_button = tk.Button(self, text="Reset", font="Arial 20 bold", width=10, height=2, bg="white", fg="black", command=self.reset)
-        self.reset_button.place(x=self.size[0]//nb, y=self.size[1]//nb*3+offset)
+        self.reset_button = tk.Button(self, text="Reset", font="Arial 20 bold", width=button_width, height=button_height, bg="white", fg="black", command=self.reset)
+        self.reset_button.place(x=self.size[0]//nb+offset//(nb+5), y=self.size[1]//nb*3+offset)
 
         # add a button select a board
-        self.select_button = tk.Button(self, text="Select", font="Arial 20 bold", width=10, height=2, bg="white", fg="black", command=self.select)
-        self.select_button.place(x=self.size[0]//nb*2, y=self.size[1]//nb*3+offset)
+        self.select_button = tk.Button(self, text="Select", font="Arial 20 bold", width=button_width, height=button_height, bg="white", fg="black", command=self.select)
+        self.select_button.place(x=self.size[0]//nb*2+offset//(nb+5), y=self.size[1]//nb*3+offset)
 
         # add a button to give an hint
-        self.hint_button = tk.Button(self, text="Hint", font="Arial 20 bold", width=10, height=2, bg="white", fg="black", command=self.hint)
-        self.hint_button.place(x=self.size[0]//nb*3, y=self.size[1]//nb*3+offset)
+        self.hint_button = tk.Button(self, text="Hint", font="Arial 20 bold", width=button_width, height=button_height, bg="white", fg="black", command=self.hint)
+        self.hint_button.place(x=self.size[0]//nb*3+offset//(nb+5), y=self.size[1]//nb*3+offset)
 
         # add a button to undo
-        self.undo_button = tk.Button(self, text="Undo", font="Arial 20 bold", width=10, height=2, bg="white", fg="black", command=self.undo)
-        self.undo_button.place(x=self.size[0]//nb*4, y=self.size[1]//nb*3+offset)
+        self.undo_button = tk.Button(self, text="Undo", font="Arial 20 bold", width=button_width, height=button_height, bg="white", fg="black", command=self.undo)
+        self.undo_button.place(x=self.size[0]//nb*4+offset//(nb+5), y=self.size[1]//nb*3+offset)
+
+        # add a button to redo
+        self.redo_button = tk.Button(self, text="Redo", font="Arial 20 bold", width=button_width, height=button_height, bg="white", fg="black", command=self.redo)
+        self.redo_button.place(x=self.size[0]//nb*5+offset//(nb+5), y=self.size[1]//nb*3+offset)
 
     def click(self, i, j) -> tuple[int, int]:
         """Change the color of a button when clicked for the nonogram"""
@@ -78,7 +85,7 @@ class UI(tk.Tk):
         self.mainloop()
 
 
-    def solve(self, sol: Board) -> None:
+    def solve(self) -> None:
         """Solve the board and show the solution"""
         pass
 
