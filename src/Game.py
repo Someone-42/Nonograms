@@ -63,6 +63,12 @@ class Game:
         self.hint_keys.add((x, y))
         self.hints.append(Case(x, y, hint_type))
 
+    def can_undo(self):
+        return not self.user_actions_stack.is_empty()
+
+    def can_redo(self):
+        return self.user_actions_stack.can_unpop()
+
     def undo(self):
         action = self.user_actions_stack.pop()
         self.user_board.grid[action.y, action.x] = action.previous_color
