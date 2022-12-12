@@ -84,6 +84,7 @@ class UI(tk.Tk):
         """Change the color of a button when clicked for the nonogram"""
         self.buttons[i][j].config(bg="black" if self.buttons[i][j]["bg"] == "white" else "white")
         self.game.color(i, j, color_to_int["black"] if self.buttons[i][j]["bg"] == "black" else color_to_int["white"])
+        self.upd_pop_unpop()
 
     def run(self) -> None:
         """Run the UI mainloop"""
@@ -143,6 +144,7 @@ class UI(tk.Tk):
                 case 3:
                     self.set_case(x, y, "green")
                     self.game.color(x, y, color_to_int["green"])
+            self.upd_pop_unpop()
 
     def undo(self) -> None:
         """Undo the last move in the stack"""
@@ -170,8 +172,11 @@ class UI(tk.Tk):
 
     def upd_pop_unpop(self) -> None:
         """Update the pop and unpop buttons"""
-        self.undo_button.config(bg=int_to_color[GRAY] if not self.game.can_pop() else int_to_color[WHITE])
-        self.redo_button.config(bg=int_to_color[GRAY] if not self.game.can_unpop() else int_to_color["white"])
+        self.can_pop = self.game.can_undo()
+        self.can_unpop = self.game.can_redo()
+
+        self.undo_button.config(bg=int_to_color[GRAY] if not self.can_pop else int_to_color[WHITE])
+        self.redo_button.config(bg=int_to_color[GRAY] if not self.can_unpop else int_to_color["white"])
         
 
 if __name__ == "__main__":
