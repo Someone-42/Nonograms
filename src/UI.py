@@ -148,11 +148,17 @@ class UI(tk.Tk):
 
     def undo(self) -> None:
         """Undo the last move in the stack"""
-        pass
+        if self.can_pop:
+            self.game.undo()
+            self.my_upd(self.game.user_board)
+            self.upd_pop_unpop()
 
     def redo(self) -> None:
         """Redo the last move in the stack"""
-        pass
+        if self.can_unpop:
+            self.game.redo()
+            self.my_upd(self.game.user_board)
+            self.upd_pop_unpop()
 
     def my_upd(self, b: Board) -> None:
         """Update the board"""
@@ -176,7 +182,7 @@ class UI(tk.Tk):
         self.can_unpop = self.game.can_redo()
 
         self.undo_button.config(bg=int_to_color[GRAY] if not self.can_pop else int_to_color[WHITE])
-        self.redo_button.config(bg=int_to_color[GRAY] if not self.can_unpop else int_to_color["white"])
+        self.redo_button.config(bg=int_to_color[GRAY] if not self.can_unpop else int_to_color[WHITE])
         
 
 if __name__ == "__main__":
