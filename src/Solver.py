@@ -12,6 +12,7 @@ from Utils import copy_2d_list
 def solve(level: Level):
     """ Returns a new solved board """
     cnf = _get_cnf(level)
+    print(len(list(sat.itersolve(cnf))))
     sol = sat.solve(cnf) # We suppose there is only one solution
     assert sol != "UNSAT", "This nonogram has no solution"
 
