@@ -5,6 +5,7 @@ from Case import Case
 from Action import Action
 import Solver
 import random
+import numpy as np
 
 class Game:
     __slots__ = (
@@ -38,7 +39,7 @@ class Game:
         self.ui.run()
 
     def is_finished(self):
-        return self.solved_board == self.user_board
+        return np.array_equal(self.user_board.grid, self.solved_board.grid)
 
     def _get_hint_type(self, x, y):
         user_xy, solved_xy = self.user_board.grid[y, x], self.solved_board.grid[y, x]
@@ -61,6 +62,7 @@ class Game:
             hint_tp = self._get_hint_type(x, y)
         self.hint_keys.add((x, y))
         self.hints.append(Case(x, y, hint_type))
+        return x, y
 
     def can_undo(self):
         return not self.user_actions_stack.is_empty()

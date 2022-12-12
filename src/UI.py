@@ -82,8 +82,12 @@ class UI(tk.Tk):
 
     def click(self, i, j) -> tuple[int, int]:
         """Change the color of a button when clicked for the nonogram"""
-        self.buttons[i][j].config(bg="black" if self.buttons[j][i]["bg"] == "white" else "white")
-        self.game.color(i, j, color_to_int[self.buttons[j][i]["bg"]])
+        if (j, i) in self.game.hint_keys:       # Can't click if case is a hint
+            return
+        self.buttons[i][j].config(bg="black" if self.game.user_board.grid[i, j] == 0 else "white")
+        self.game.color(j, i, color_to_int[self.buttons[i][j]["bg"]])
+        if self.game.is_finished():
+            self.show_win()
         self.upd_pop_unpop()
 
     def run(self) -> None:
@@ -128,26 +132,27 @@ class UI(tk.Tk):
         except(FileNotFoundError, AttributeError):
             return None # if the user cancels the file selection
 
+    def _get_hint_color(self, hint_type):
+        match hint_type:
+            case 1:
+                return GRAY
+            case 2:
+                return RED
+            case 3:
+                return GREEN
+
     def hint(self) -> None:
         """Give an hint and asks for the level of hint"""
         hint_level = simpledialog.askinteger("Hint", "Enter hint type (1-3)", minvalue=1, maxvalue=3)
-        if hint_level is not None:
-            self.game.new_hint(hint_level)
-            # TODO: When creating a hint, the game puts the hint into a list, so you shouldn't change the grid
-            # TODO: Show hints from the list of hints (game.hints)
-            # Also when hints showing, shouldn't be clickable
-            x, y = self.game.hints[-1].x, self.game.hints[-1].y
-            match hint_level:
-                case 1:
-                    self.set_case(x, y, "black")
-                    self.game.color(x, y, color_to_int["black"])
-                case 2:
-                    self.set_case(x, y, "white")
-                    self.game.color(x, y, color_to_int["white"])
-                case 3:
-                    self.set_case(x, y, "green")
-                    self.game.color(x, y, color_to_int["green"])
-            self.upd_pop_unpop()
+        if hint_level is None:
+            return
+        x, y, hint_type = self.game.new_hint(hint_level)
+        if hint_type == -1:
+            print("Couldn't create hint of type", hint_level)
+            return
+        color = self._get_hint_color(hint_type)
+        self.buttons[y][x].config(bg=color)
+        self.upd_pop_unpop()
 
     def undo(self) -> None:
         """Undo the last move in the stack"""

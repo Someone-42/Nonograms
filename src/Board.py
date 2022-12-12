@@ -8,7 +8,7 @@ class Board:
     def __init__(self, size, _create_array = True):
         self.size = size
         if _create_array:
-            self.grid = np.zeros((size[0], size[1]))
+            self.grid = np.zeros((size[0], size[1]), dtype=int)
         else:
             self.grid = None
 
