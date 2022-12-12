@@ -168,7 +168,7 @@ class UI(tk.Tk):
             return
         color = self._get_hint_color(hint_type)
         if hint_type == 1:
-            self.game.user_board[y, x] = self.game.solved_board.grid[y, x]
+            self.game.user_board.grid[y, x] = self.game.solved_board.grid[y, x]
         self.buttons[y][x].config(bg=int_to_color[color])
         self.upd_pop_unpop()
         self.test_victory()
