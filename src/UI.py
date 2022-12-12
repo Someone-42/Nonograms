@@ -132,6 +132,19 @@ class UI(tk.Tk):
         except(FileNotFoundError, AttributeError):
             return None # if the user cancels the file selection
 
+    def load(self) -> None:
+        """loads a board from game"""
+        self.size_b = self.game.level.size
+        wgds = tk.Tk.winfo_children(self) # all widgets
+        #find frame within the widgets
+        for i, wgd in enumerate(wgds):
+            if wgd.winfo_class() == "Frame":
+                index_frame = i
+                wgds[index_frame].destroy()
+                break
+        self.show_board(self.game.user_board, self.game.level)
+        self.reset()
+
     def _get_hint_color(self, hint_type):
         match hint_type:
             case 1:
