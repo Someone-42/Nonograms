@@ -34,6 +34,7 @@ class Game:
         self.hint_keys = dict()
         self.hints = []
         self.user_actions_stack = UnsafeStack()
+        self.ui.load()
 
     def run(self):
         self.ui.run()

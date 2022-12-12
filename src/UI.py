@@ -165,6 +165,7 @@ class UI(tk.Tk):
             return
         color = self._get_hint_color(hint_type)
         self.buttons[y][x].config(bg=int_to_color[color])
+        self.game.user_board.grid[y, x] = color
         self.upd_pop_unpop()
 
     def undo(self) -> None:
@@ -191,7 +192,7 @@ class UI(tk.Tk):
         """Colors the buttons green when the user wins"""
         for i in range(self.size_b[0]):
             for j in range(self.size_b[1]):
-                self.buttons[j][i].config(bg="green" if self.buttons[j][i]["bg"] == "black" else "white", fg="white")
+                self.buttons[j][i].config(bg="green" if self.buttons[j][i]["bg"] != "white" else "white", fg="white")
 
     def set_case(self, x: int, y: int, color: str) -> None:
         """Set the case of the board"""
