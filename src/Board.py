@@ -12,5 +12,5 @@ class Board:
         else:
             self.grid = None
 
-    def clear():
+    def clear(self):
         self.grid *= 0
