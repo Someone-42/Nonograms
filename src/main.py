@@ -9,3 +9,6 @@ game = Game(UI())
 level = Level.from_file("src/TestBoard.lvl")
 game.load_level(level)
 game.run()
+
+
+# Non-square matrices are not supported for now
