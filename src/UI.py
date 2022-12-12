@@ -151,7 +151,7 @@ class UI(tk.Tk):
             print("Couldn't create hint of type", hint_level)
             return
         color = self._get_hint_color(hint_type)
-        self.buttons[y][x].config(bg=color)
+        self.buttons[y][x].config(bg=int_to_color[color])
         self.upd_pop_unpop()
 
     def undo(self) -> None:

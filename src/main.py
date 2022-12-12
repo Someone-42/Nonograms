@@ -5,5 +5,5 @@ from Game import Game
 from UI import UI
 
 game = Game(UI())
-
+game.load_level()
 game.run()

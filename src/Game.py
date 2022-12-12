@@ -57,12 +57,16 @@ class Game:
     def new_hint(self, hint_type: int):
         x, y = -1, -1
         hint_tp = -1
-        while (x == -1) and ((x, y) in self.hint_keys) and (hint_tp != hint_type):
+        attempts = 400
+        while (x == -1) or ((x, y) in self.hint_keys) or (hint_tp != hint_type) and (attempts > 0):
             x, y = random.randint(0, self.level.size[0] - 1), random.randint(0, self.level.size[1] - 1)
             hint_tp = self._get_hint_type(x, y)
+            attempts -= 1
+        if attempts == 0:
+            return -1, -1, -1
         self.hint_keys.add((x, y))
         self.hints.append(Case(x, y, hint_type))
-        return x, y
+        return x, y, hint_tp
 
     def can_undo(self):
         return not self.user_actions_stack.is_empty()
