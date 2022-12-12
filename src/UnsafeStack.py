@@ -49,6 +49,10 @@ class UnsafeStack:
     def __str__(self) -> str:
         return str(self.stack[:self.pointer])
 
+    def clear(self):
+        self.pointer = -1
+        self.max_unpop = 0
+
 if __name__ == "__main__":
     s = UnsafeStack()
     s.push(1)
