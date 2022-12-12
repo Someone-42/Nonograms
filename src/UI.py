@@ -133,6 +133,9 @@ class UI(tk.Tk):
         hint_level = simpledialog.askinteger("Hint", "Enter hint type (1-3)", minvalue=1, maxvalue=3)
         if hint_level is not None:
             self.game.new_hint(hint_level)
+            # TODO: When creating a hint, the game puts the hint into a list, so you shouldn't change the grid
+            # TODO: Show hints from the list of hints (game.hints)
+            # Also when hints showing, shouldn't be clickable
             x, y = self.game.hints[-1].x, self.game.hints[-1].y
             match hint_level:
                 case 1:
