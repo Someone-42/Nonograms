@@ -11,3 +11,6 @@ class Board:
             self.grid = np.zeros((size[0], size[1]))
         else:
             self.grid = None
+
+    def clear():
+        self.grid *= 0
