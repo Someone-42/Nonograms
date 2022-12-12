@@ -83,8 +83,9 @@ class Game:
         self.user_board.grid[y, x] = color
         self.user_actions_stack.push(action)
 
-    
     def reset(self):
-        self.user_board = Board(self.level.size)
-        self.user_actions_stack = UnsafeStack()
+        self.user_board.clear()
+        self.user_actions_stack.clear()
+        self.hints.clear()
+        self.hint_keys.clear()
         
