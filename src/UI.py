@@ -82,8 +82,8 @@ class UI(tk.Tk):
 
     def click(self, i, j) -> tuple[int, int]:
         """Change the color of a button when clicked for the nonogram"""
-        self.buttons[i][j].config(bg="black" if self.buttons[i][j]["bg"] == "white" else "white")
-        self.game.color(i, j, color_to_int["black"] if self.buttons[i][j]["bg"] == "black" else color_to_int["white"])
+        self.buttons[i][j].config(bg="black" if self.buttons[j][i]["bg"] == "white" else "white")
+        self.game.color(i, j, color_to_int[self.buttons[j][i]["bg"]])
         self.upd_pop_unpop()
 
     def run(self) -> None:
@@ -98,9 +98,9 @@ class UI(tk.Tk):
 
     def reset(self) -> None:
         """Reset the board to 0"""
-        for i in range(self.size_b[0]):
-            for j in range(self.size_b[1]):
-                self.buttons[i][j].config(bg="white", fg="black")
+        for j in range(self.size_b[0]):
+            for i in range(self.size_b[1]):
+                self.buttons[j][i].config(bg="white", fg="black")
         self.game.reset()
 
     def select(self) -> Board:
@@ -165,15 +165,15 @@ class UI(tk.Tk):
 
     def my_upd(self, b: Board) -> None:
         """Update the board"""
-        for i in range(b.size[0]):
-            for j in range(b.size[1]):
-                self.buttons[i][j].config(bg=int_to_color[b.grid[i,j]])
+        for j in range(b.size[0]):
+            for i in range(b.size[1]):
+                self.buttons[j][i].config(bg=int_to_color[b.grid[j,i]])
 
     def show_win(self) -> None:
         """Colors the buttons green when the user wins"""
         for i in range(self.size_b[0]):
             for j in range(self.size_b[1]):
-                self.buttons[i][j].config(bg="green" if self.buttons[i][j]["bg"] == "black" else "white", fg="white")
+                self.buttons[j][i].config(bg="green" if self.buttons[j][i]["bg"] == "black" else "white", fg="white")
 
     def set_case(self, x: int, y: int, color: str) -> None:
         """Set the case of the board"""
