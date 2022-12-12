@@ -1,11 +1,12 @@
 import tkinter as tk
 from Board import Board
-from tkinter import filedialog
+from tkinter import filedialog, simpledialog
 from Solver import solve # just for testing
 from Level import Level
 from UnsafeStack import UnsafeStack
 from Game import Game
 from Case import Case
+from Utils import WHITE, BLACK, RED, GREEN, GRAY, int_to_color, color_to_int
 
 class UI(tk.Tk):
     """This class represents the UI for the nonogram solver."""
@@ -23,6 +24,8 @@ class UI(tk.Tk):
         self.config(bg="white")
         self.game = None
         self.size_b = None
+        self.can_pop = self.game.can_undo() if self.game else False
+        self.can_unpop = self.game.can_redo() if self.game else False
 
         self.show_menu()
 
@@ -43,7 +46,7 @@ class UI(tk.Tk):
         for i in range(b.size[0]):
             self.buttons.append([])
             for j in range(b.size[1]):
-                self.buttons[i].append(tk.Button(self.grid, text=" ", font="Arial 20 bold", width=button_width, height=button_height, bg="white" if not b.grid[i,j] else "black", fg="black", command=lambda i=i, j=j: self.click(i, j)))
+                self.buttons[i].append(tk.Button(self.grid, text=" ", font="Arial 20 bold", width=button_width, height=button_height, bg=int_to_color[b.grid[i,j]], fg="black", command=lambda i=i, j=j: self.click(i, j)))
                 self.buttons[i][j].grid(row=i+1, column=j+1)
     
     def show_menu(self) -> None:
@@ -70,17 +73,17 @@ class UI(tk.Tk):
         self.hint_button.place(x=self.size[0]//nb*3+offset//(nb+5), y=self.size[1]//nb*3+offset)
 
         # add a button to undo
-        self.undo_button = tk.Button(self, text="Undo", font="Arial 20 bold", width=button_width, height=button_height, bg="white", fg="black", command=self.undo)
+        self.undo_button = tk.Button(self, text="Undo", font="Arial 20 bold", width=button_width, height=button_height, bg="gray" if not self.can_pop else "white", fg="black", command=self.undo)
         self.undo_button.place(x=self.size[0]//nb*4+offset//(nb+5), y=self.size[1]//nb*3+offset)
 
         # add a button to redo
-        self.redo_button = tk.Button(self, text="Redo", font="Arial 20 bold", width=button_width, height=button_height, bg="white", fg="black", command=self.redo)
+        self.redo_button = tk.Button(self, text="Redo", font="Arial 20 bold", width=button_width, height=button_height, bg="gray" if not self.can_unpop else "white", fg="black", command=self.redo)
         self.redo_button.place(x=self.size[0]//nb*5+offset//(nb+5), y=self.size[1]//nb*3+offset)
 
     def click(self, i, j) -> tuple[int, int]:
         """Change the color of a button when clicked for the nonogram"""
         self.buttons[i][j].config(bg="black" if self.buttons[i][j]["bg"] == "white" else "white")
-        return i,j
+        self.game.color(i, j, color_to_int["black"] if self.buttons[i][j]["bg"] == "black" else color_to_int["white"])
 
     def run(self) -> None:
         """Run the UI mainloop"""
@@ -90,7 +93,7 @@ class UI(tk.Tk):
     def solve(self) -> None:
         """Solve the board and show the solution"""
         self.my_upd(self.game.solved_board)
-        self.show_win()
+        self.show_win() # altough it's obvious now, or is it?
 
     def reset(self) -> None:
         """Reset the board to 0"""
@@ -124,10 +127,22 @@ class UI(tk.Tk):
         except(FileNotFoundError, AttributeError):
             return None # if the user cancels the file selection
 
-
     def hint(self) -> None:
         """Give an hint and asks for the level of hint"""
-        pass
+        hint_level = simpledialog.askinteger("Hint", "Enter hint type (1-3)", minvalue=1, maxvalue=3)
+        if hint_level is not None:
+            self.game.new_hint(hint_level)
+            x, y = self.game.hints[-1].x, self.game.hints[-1].y
+            match hint_level:
+                case 1:
+                    self.set_case(x, y, "black")
+                    self.game.color(x, y, color_to_int["black"])
+                case 2:
+                    self.set_case(x, y, "white")
+                    self.game.color(x, y, color_to_int["white"])
+                case 3:
+                    self.set_case(x, y, "green")
+                    self.game.color(x, y, color_to_int["green"])
 
     def undo(self) -> None:
         """Undo the last move in the stack"""
@@ -141,13 +156,23 @@ class UI(tk.Tk):
         """Update the board"""
         for i in range(b.size[0]):
             for j in range(b.size[1]):
-                self.buttons[i][j].config(bg="black" if b.grid[i,j] else "white")
+                self.buttons[i][j].config(bg=int_to_color[b.grid[i,j]])
 
     def show_win(self) -> None:
         """Colors the buttons green when the user wins"""
         for i in range(self.size_b[0]):
             for j in range(self.size_b[1]):
                 self.buttons[i][j].config(bg="green" if self.buttons[i][j]["bg"] == "black" else "white", fg="white")
+
+    def set_case(self, x: int, y: int, color: str) -> None:
+        """Set the case of the board"""
+        self.buttons[y][x].config(bg=color)
+
+    def upd_pop_unpop(self) -> None:
+        """Update the pop and unpop buttons"""
+        self.undo_button.config(bg=int_to_color[GRAY] if not self.game.can_pop() else int_to_color[WHITE])
+        self.redo_button.config(bg=int_to_color[GRAY] if not self.game.can_unpop() else int_to_color["white"])
+        
 
 if __name__ == "__main__":
     Game = Game(UI())
