@@ -86,8 +86,7 @@ class UI(tk.Tk):
             return
         self.buttons[i][j].config(bg="black" if self.game.user_board.grid[i, j] == 0 else "white")
         self.game.color(j, i, color_to_int[self.buttons[i][j]["bg"]])
-        if self.game.is_finished():
-            self.show_win()
+        self.test_victory()
         self.upd_pop_unpop()
 
     def run(self) -> None:
@@ -154,6 +153,10 @@ class UI(tk.Tk):
             case 3:
                 return GREEN
 
+    def test_victory(self):
+        if self.game.is_finished():
+            self.show_win()
+
     def hint(self) -> None:
         """Give an hint and asks for the level of hint"""
         hint_level = simpledialog.askinteger("Hint", "Enter hint type (1-3)", minvalue=1, maxvalue=3)
@@ -165,9 +168,10 @@ class UI(tk.Tk):
             return
         color = self._get_hint_color(hint_type)
         if hint_type == 1:
-            self.game.color(x, y, self.game.solved_board.grid[y, x])
+            self.game.user_board[y, x] = self.game.solved_board.grid[y, x]
         self.buttons[y][x].config(bg=int_to_color[color])
         self.upd_pop_unpop()
+        self.test_victory()
 
     def undo(self) -> None:
         """Undo the last move in the stack"""
@@ -175,6 +179,7 @@ class UI(tk.Tk):
             self.game.undo()
             self.my_upd(self.game.user_board)
             self.upd_pop_unpop()
+            self.test_victory()
 
     def redo(self) -> None:
         """Redo the last move in the stack"""
@@ -182,6 +187,7 @@ class UI(tk.Tk):
             self.game.redo()
             self.my_upd(self.game.user_board)
             self.upd_pop_unpop()
+            self.test_victory()
 
     def my_upd(self, b: Board) -> None:
         """Update the board"""
