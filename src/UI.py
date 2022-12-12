@@ -82,7 +82,7 @@ class UI(tk.Tk):
 
     def click(self, i, j) -> tuple[int, int]:
         """Change the color of a button when clicked for the nonogram"""
-        if (j, i) in self.game.hint_keys:       # Can't click if case is a hint
+        if (j, i) in self.game.hint_keys and self.game.hint_keys[(j, i)] != 2:       # Can't click if case is a hint
             return
         self.buttons[i][j].config(bg="black" if self.game.user_board.grid[i, j] == 0 else "white")
         self.game.color(j, i, color_to_int[self.buttons[i][j]["bg"]])

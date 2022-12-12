@@ -31,7 +31,7 @@ class Game:
         self.level = level
         self.user_board = Board(level.size)
         self.solved_board = Solver.solve(level)
-        self.hint_keys = set()
+        self.hint_keys = dict()
         self.hints = []
         self.user_actions_stack = UnsafeStack()
 
@@ -64,7 +64,7 @@ class Game:
             attempts -= 1
         if attempts == 0:
             return -1, -1, -1
-        self.hint_keys.add((x, y))
+        self.hint_keys[(x, y)] = hint_type
         self.hints.append(Case(x, y, hint_type))
         return x, y, hint_tp
 
