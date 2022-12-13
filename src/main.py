@@ -6,7 +6,7 @@ from Level import Level
 from UI import UI
 
 game = Game(UI())
-level = Level.from_file("src/TestBoard.lvl")
+level = Level.from_file("src/Levels/TestBoard.lvl")
 game.load_level(level)
 game.run()
 
