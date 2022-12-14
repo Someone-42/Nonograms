@@ -35,6 +35,7 @@ class Game:
         self.hints = []
         self.user_actions_stack = UnsafeStack()
         self.ui.load()
+        self.ui.update_level_name()
 
     def run(self):
         self.ui.run()

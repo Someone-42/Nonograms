@@ -80,6 +80,9 @@ class UI(tk.Tk):
         self.redo_button = tk.Button(self, text="Redo", font="Arial 20 bold", width=button_width, height=button_height, bg="gray" if not self.can_unpop else "white", fg="black", command=self.redo)
         self.redo_button.place(x=self.size[0]//nb*5+offset//(nb+5), y=self.size[1]//nb*3+offset)
 
+        self.level_text = tk.Label(self, text="NotLoaded", font="Arial 20 bold", height=button_height, width=button_width * 2)
+        self.level_text.place(x=(self.size[0]) // 2 - button_width * 8, y=self.size[1]//nb*2.1+offset)
+
     def click(self, i, j) -> tuple[int, int]:
         """Change the color of a button when clicked for the nonogram"""
         if (j, i) in self.game.hint_keys and self.game.hint_keys[(j, i)] != 2:       # Can't click if case is a hint
@@ -88,6 +91,9 @@ class UI(tk.Tk):
         self.game.color(j, i, color_to_int[self.buttons[i][j]["bg"]])
         self.test_victory()
         self.upd_pop_unpop()
+
+    def update_level_name(self):
+        self.level_text.config(text=self.game.level.name)
 
     def run(self) -> None:
         """Run the UI mainloop"""
