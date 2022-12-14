@@ -1,9 +1,14 @@
 # Author: Lemarchand Tristan, Tison Alexandre, Bensouiah Rayan
 # Date: 10/12/2022
 
-import Solver
-from Board import Board
+from Game import Game
+from Level import Level
+from UI import UI
 
-b = Board.from_file("src/TestBoard.txt")
-b = Solver.solve(b)
-b.display_console()
+game = Game(UI())
+level = Level.from_file("src/Levels/Apple.lvl")
+game.load_level(level)
+game.run()
+
+
+# Non-square matrices are not supported for now
