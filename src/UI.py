@@ -110,7 +110,7 @@ class UI(tk.Tk):
         """Select a board from a file and loads it into the UI AND returns the new board"""
         try:
             filename = filedialog.askopenfilename(
-                initialdir = "src/",
+                initialdir = "src/Levels",
                 title = "Select file",
                 filetypes = (("Text files", "*.lvl"), ("all files", "*.*"))
             )
