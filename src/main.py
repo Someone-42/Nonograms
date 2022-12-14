@@ -4,6 +4,7 @@
 import Solver
 from Board import Board
 
-b = Board.from_file("src/TestBoard.txt")
-b = Solver.solve(b)
-b.display_console()
+game = Game(UI())
+level = Level.from_file("src/Levels/Apple.lvl")
+game.load_level(level)
+game.run()
