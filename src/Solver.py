@@ -12,7 +12,7 @@ from Utils import copy_2d_list
 def solve(level: Level):
     """ Returns a new solved board """
     cnf = _get_cnf(level)
-    print(len(list(sat.itersolve(cnf))))
+    #print(len(list(sat.itersolve(cnf))))
     sol = sat.solve(cnf) # We suppose there is only one solution
     assert sol != "UNSAT", "This nonogram has no solution"
 
@@ -22,9 +22,8 @@ def solve(level: Level):
     for i in range(m):
         grid.append(sol[(n + 2) * (i + 1) + 1:(n + 2) * (i + 2) - 1])
 
-    grid = np.flip(np.rot90( # Rotating and flipping bc im lazy to make it cleaner, at least this way it shows properly
-        np.array(grid)[:].reshape(level.size[0], level.size[1]), 
-        -1), 1)
+    grid = np.array(grid)[:].reshape(level.size[0], level.size[1])
+        
 
     solved = Board(level.size, False)
     solved.grid = np.where(grid > 0, 1, 0)
@@ -37,12 +36,12 @@ def _get_cnf(level : Level):
     cnf = []
 
     x_grid = np.arange(1, (m + 2) * (n + 2) + 1).reshape((m + 2, n + 2))
-    counter = (m + 2) * (n + 2) + 1
+    counter = (m + 2) * (n + 2)
 
     for i in range(m):
         x = x_grid[i + 1]
         s = np.arange(counter, counter + (n + 1)**2).reshape((n + 1, n + 1))
-        row_constraint = level.constraints[i]
+        row_constraint = level.constraints[i + n]
 
         counter += (n + 1)**2
 
@@ -52,7 +51,7 @@ def _get_cnf(level : Level):
         x = x_grid[:, j + 1]
         s = np.arange(counter, counter + (m + 1)**2).reshape((m + 1, m + 1))
         counter += (m + 1)**2
-        column_constraint = level.constraints[j + m]
+        column_constraint = level.constraints[j]
 
         cnf += _np_cnf_to_int(_B(x, s, column_constraint, m) + _C(x, s, m))
 
