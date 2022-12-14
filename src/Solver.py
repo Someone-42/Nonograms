@@ -9,13 +9,7 @@ from Utils import copy_2d_list
 # T : The big table HMMM
 # x : a propositional variables array from 0 to n + 1
 
-def solve(level: Level):
-    """ Returns a new solved board """
-    cnf = _get_cnf(level)
-    #print(len(list(sat.itersolve(cnf))))
-    sol = sat.solve(cnf) # We suppose there is only one solution
-    assert sol != "UNSAT", "This nonogram has no solution"
-
+def _get_board_from_sol(sol):
     sol = list(sol)
     n, m = level.size
     grid = []
@@ -24,11 +18,19 @@ def solve(level: Level):
 
     grid = np.array(grid)[:].reshape(level.size[0], level.size[1])
         
-
     solved = Board(level.size, False)
     solved.grid = np.where(grid > 0, 1, 0)
 
     return solved
+
+def solve(level: Level):
+    """ Returns a new solved board """
+    cnf = _get_cnf(level)
+    print(len(list(sat.itersolve(cnf))))
+    sol = sat.solve(cnf) # We suppose there is only one solution
+    assert sol != "UNSAT", "This nonogram has no solution"
+
+    return _get_board_from_sol(sol)
 
 def _get_cnf(level : Level):
     # Could've been made cleaner, way cleaner...
@@ -132,7 +134,7 @@ def _show_sol(sol, simplified = False):
         print(" ".join(sub_l))
 
 if __name__ == "__main__":
-    L = (3, 2)
+    """L = (3, 2)
     n = 8
     x = np.arange(1, n + 3)
     s = np.arange(n + 3, n + 3 + (n + 1) ** 2).reshape((n + 1, n + 1))
@@ -149,3 +151,15 @@ if __name__ == "__main__":
         _show_sol(sol, True)
         #print(np.array(sol) > 0)
     #print(" ".join('0' if i < 0 else '1' for i in sol))
+    """
+    from Utils import display_console_board
+    level = Level.from_file("src/Levels/Apple.lvl")
+    cnf = _get_cnf(level)
+    board = _get_board_from_sol(sat.solve(cnf))
+    for sol in sat.itersolve(cnf):
+        new_board = _get_board_from_sol(sol)
+        if not np.array_equal(board.grid, new_board.grid):
+            print("Error on these 2 boards:")
+            display_console_board(new_board)
+            print()
+            display_console_board()
