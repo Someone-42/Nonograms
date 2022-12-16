@@ -111,6 +111,7 @@ class UI(tk.Tk):
             for i in range(self.size_b[1]):
                 self.buttons[j][i].config(bg="white", fg="black")
         self.game.reset()
+        self.upd_pop_unpop()
 
     def select(self) -> Board:
         """Select a board from a file and loads it into the UI AND returns the new board"""
