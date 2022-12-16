@@ -8,6 +8,8 @@ from Game import Game
 from Case import Case
 from Utils import WHITE, BLACK, RED, GREEN, GRAY, int_to_color, color_to_int
 
+# TODO: Fix non-square matrix UI bug
+
 class UI(tk.Tk):
     """This class represents the UI for the nonogram solver."""
     def __init__(self, title: str = "Nonogram", size: tuple =(900, 900)) -> None:
