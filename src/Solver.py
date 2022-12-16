@@ -5,10 +5,6 @@ from Board import Board
 from Level import Level
 from Utils import copy_2d_list
 
-# TODO: Redefine the old things
-# T : The big table HMMM
-# x : a propositional variables array from 0 to n + 1
-
 def _get_board_from_sol(sol, level):
     sol = list(sol)
     n, m = level.size
@@ -26,7 +22,7 @@ def _get_board_from_sol(sol, level):
 def solve(level: Level):
     """ Returns a new solved board """
     cnf = _get_cnf(level)
-    print(len(list(sat.itersolve(cnf))))
+    #print(len(list(sat.itersolve(cnf))))
     sol = sat.solve(cnf) # We suppose there is only one solution
     assert sol != "UNSAT", "This nonogram has no solution"
 
