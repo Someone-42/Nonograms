@@ -56,19 +56,22 @@ class Game:
             else:
                 return 3        # Hint type 3 : Right placement by the user
 
+    def _get_hint_placements(self, hint_type: int) -> list:
+        l = []
+        for x in range(self.user_board.size[0]):
+            for y in range(self.user_board.size[1]):
+                if self._get_hint_type(x, y) == hint_type and ((x, y) not in self.hint_keys):
+                    l.append((x, y))
+        return l
+
     def new_hint(self, hint_type: int):
-        x, y = -1, -1
-        hint_tp = -1
-        attempts = 400
-        while (x == -1) or ((x, y) in self.hint_keys) or (hint_tp != hint_type) and (attempts > 0):
-            x, y = random.randint(0, self.level.size[0] - 1), random.randint(0, self.level.size[1] - 1)
-            hint_tp = self._get_hint_type(x, y)
-            attempts -= 1
-        if attempts == 0:
+        hint_placements = self._get_hint_placements(hint_type)
+        if not hint_placements:
             return -1, -1, -1
+        x, y = random.choice(self._get_hint_placements(hint_type))
         self.hint_keys[(x, y)] = hint_type
         self.hints.append(Case(x, y, hint_type))
-        return x, y, hint_tp
+        return x, y, hint_type
 
     def can_undo(self):
         return not self.user_actions_stack.is_empty()
